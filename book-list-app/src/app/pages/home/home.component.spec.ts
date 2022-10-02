@@ -5,6 +5,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BookService } from '../../services/book.service';
 import { Book } from '../../models/book.model';
 import { of } from 'rxjs';
+import { DOCUMENT } from '@angular/common';
 
 const listBook: Book[] = [
     {
@@ -60,7 +61,11 @@ describe('Home component', () => {
                 {
                     provide: BookService,
                     useValue: bookServiceMock
-                }
+                },
+                {
+                  provide: Document,
+                  useExisting: DOCUMENT
+              }
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
         }).compileComponents();
@@ -84,5 +89,13 @@ describe('Home component', () => {
         expect(component.listBook.length).toBe(3);
         expect(component.listBook).toEqual(listBook);
     });
+
+    it('test alert', () => {
+      const documentService = TestBed.inject(Document);
+      const windowAngular = documentService.defaultView;
+      const spy = jest.spyOn(windowAngular,'alert').mockImplementation(()=>null);
+      component.ngOnInit();
+      expect(spy).toHaveBeenCalled();
+  });
 
 });
